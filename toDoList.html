@@ -11,7 +11,9 @@
     <link rel="stylesheet" href="./css/index.css">
     <script type="text/javascript" src="./lib/vue.js"></script>
     <style>
-        [v-cloak] { display: none }
+        [v-cloak] {
+            display: none
+        }
     </style>
 </head>
 
@@ -27,27 +29,12 @@
                 <li :class="['todo',{completed:item.isTodo,editing:item.isEdit} ]" v-for="(item, index) in list">
                     <div class="view">
                         <input type="checkbox" v-model="item.isTodo" class="toggle">
-                        <label  v-cloak @dblclick="editTodo(index)">{{item.name}}</label>
+                        <label v-cloak @dblclick="editTodo(index)">{{item.name}}</label>
                         <button class="destroy" @click="deleteTodo(index)"></button>
                     </div>
-                    <input type="text" v-model="savetodo" class="edit">
+                    <!-- v-focus 自定义指令 -->
+                    <input type="text" v-if="item.isEdit" v-focus v-model="savetodo" @keyup.enter="addEidtTodo(index)" @keyup.esc="escTodo(index)" @blur="escTodo(index)" class="edit">
                 </li>
-                <!-- <li class="todo completed">
-                    <div class="view">
-                        <input type="checkbox" class="toggle">
-                        <label>21</label>
-                        <button class="destroy"></button>
-                    </div>
-                    <input type="text" class="edit">
-                </li>
-                <li class="todo editing">
-                    <div class="view">
-                        <input type="checkbox" class="toggle">
-                        <label>21</label>
-                        <button class="destroy"></button>
-                    </div>
-                    <input type="text" class="edit">
-                </li> -->
             </ul>
         </section>
         <footer class="footer">
@@ -96,13 +83,21 @@
 </html>
 <script src="./lib/vue.js"></script>
 <script>
+    // 注册一个全局自定义指令 `v-focus`
+    Vue.directive('focus', {
+        // 当被绑定的元素插入到 DOM 中时……
+        inserted: function (el) {
+            // 聚焦元素
+            el.focus()
+        }
+    });
     let app = new Vue({
         el: '.todoapp',
         data: {
-            // 带办事
+            // 输入的带办事
             valueinfo: '',
-            // 零时保存的带办事
-            savetodo:"",
+            // 编辑时零时保存的带办事
+            savetodo: "",
             list: [{
                     name: "吃饭",
                     isTodo: true,
@@ -145,9 +140,17 @@
                 //把当前的带办事保存到savetodo 在编辑状态显示
                 this.savetodo = this.list[index].name;
                 //console.log(this.editTodo);
-                
             },
-            //
+            //保存编辑的带办事
+            addEidtTodo(index){
+               // console.log('kss');
+                this.list[index].name = this.savetodo;
+                this.list[index].isEdit = !this.list[index].isEdit;
+            },
+            //退出编辑状态
+            escTodo(index){
+                this.list[index].isEdit = !this.list[index].isEdit;
+            }
         }
     });
 </script>
