@@ -25,12 +25,12 @@
         </header>
         <section class="main">
             <input type="checkbox" v-model="allCheck" @change="checkallTodo" class="toggle-all">
-            <ul class="todo-list">
+            <ul class="todo-list" v-cloak >
                 <!--changeList 是根据条件得到的list  -->
                 <li :class="['todo',{completed:item.isTodo,editing:item.isEdit} ]" v-for="(item, index) in changeList">
                     <div class="view">
-                        <input type="checkbox" v-model="item.isTodo" class="toggle">
-                        <label v-cloak @dblclick="editTodo(index)">{{item.name}}</label>
+                        <input type="checkbox" @change="checkIsCheckallTodo" v-model="item.isTodo" class="toggle">
+                        <label @dblclick="editTodo(index)">{{item.name}}</label>
                         <button class="destroy" @click="deleteTodo(index)"></button>
                     </div>
                     <!-- v-focus 自定义指令 -->
@@ -177,7 +177,19 @@
                     this.list[i].isTodo = this.allCheck;
               }
                 
+            },
+            // 判断是否全部选中
+            checkIsCheckallTodo(){
+                let totalNum = this.list.length;
+                let currentNum = this.list.filter((v,i)=>{
+                    if(v.isTodo == true){
+                        return v;
+                    }
+                }).length;
+                this.allCheck = totalNum==currentNum ;
+                
             }
+            
         },
         // 计算属性
         computed: {
