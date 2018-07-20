@@ -21,10 +21,10 @@
     <section class="todoapp">
         <header class="header">
             <h1>任务清单</h1>
-            <input autofocus="autofocus" v-model="valueinfo" autocomplete="off" placeholder="想干啥?" class="new-todo" @keyup.enter="add">
+            <input autofocus="autofocus"  v-model="valueinfo" autocomplete="off" placeholder="想干啥?" class="new-todo" @keyup.enter="add">
         </header>
         <section class="main">
-            <input type="checkbox" class="toggle-all">
+            <input type="checkbox" v-model="allCheck" @change="checkallTodo" class="toggle-all">
             <ul class="todo-list">
                 <!--changeList 是根据条件得到的list  -->
                 <li :class="['todo',{completed:item.isTodo,editing:item.isEdit} ]" v-for="(item, index) in changeList">
@@ -102,6 +102,8 @@
             savetodo: "",
             //是否显示但办事的状态
             visibility: '全部',
+            //全选状态
+            allCheck: false,
             list: [{
                     name: "吃饭",
                     isTodo: true,
@@ -167,6 +169,14 @@
             //改变显示条件
             changevisibility(data) {
                 this.visibility = data;
+            },
+            //全选
+            checkallTodo(){
+               // console.log('sks');
+              for (let i = 0; i< this.list.length; i++) {                
+                    this.list[i].isTodo = this.allCheck;
+              }
+                
             }
         },
         // 计算属性
