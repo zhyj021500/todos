@@ -26,33 +26,35 @@
         <section class="main">
             <input type="checkbox" class="toggle-all">
             <ul class="todo-list">
-                <li :class="['todo',{completed:item.isTodo,editing:item.isEdit} ]" v-for="(item, index) in list">
+                <!--changeList 是根据条件得到的list  -->
+                <li :class="['todo',{completed:item.isTodo,editing:item.isEdit} ]" v-for="(item, index) in changeList">
                     <div class="view">
                         <input type="checkbox" v-model="item.isTodo" class="toggle">
                         <label v-cloak @dblclick="editTodo(index)">{{item.name}}</label>
                         <button class="destroy" @click="deleteTodo(index)"></button>
                     </div>
                     <!-- v-focus 自定义指令 -->
-                    <input type="text" v-if="item.isEdit" v-focus v-model="savetodo" @keyup.enter="addEidtTodo(index)" @keyup.esc="escTodo(index)" @blur="escTodo(index)" class="edit">
+                    <input type="text" v-if="item.isEdit" v-focus v-model="savetodo" @keyup.enter="addEidtTodo(index)" @keyup.esc="escTodo(index)"
+                        @blur="escTodo(index)" class="edit">
                 </li>
             </ul>
         </section>
         <footer class="footer">
-            <span class="todo-count">
-                <strong>1</strong> 项 剩余
+            <span class="todo-count" v-if="remain!=0">
+                <strong v-cloak>{{remain}}</strong> 项 剩余
             </span>
             <ul class="filters">
                 <li>
-                    <a href="#/all" class="selected">全部</a>
+                    <a href="#/all" :class="{selected:visibility == '全部'}" @click="changevisibility('全部')">全部</a>
                 </li>
                 <li>
-                    <a href="#/active" class="selected">未完成</a>
+                    <a href="#/active" :class="{selected:visibility =='未完成'} " @click="changevisibility('未完成')">未完成</a>
                 </li>
                 <li>
-                    <a href="#/completed" class="selected">完成</a>
+                    <a href="#/completed" :class="{selected:visibility == '完成'}" @click="changevisibility('完成')">完成</a>
                 </li>
             </ul>
-            <button class="clear-completed">
+            <button class="clear-completed" @click="clearList">
                 清空列表
             </button>
         </footer>
@@ -98,6 +100,8 @@
             valueinfo: '',
             // 编辑时零时保存的带办事
             savetodo: "",
+            //是否显示但办事的状态
+            visibility: '全部',
             list: [{
                     name: "吃饭",
                     isTodo: true,
@@ -105,7 +109,12 @@
                 },
                 {
                     name: "睡觉",
-                    idTodo: false,
+                    isTodo: false,
+                    isEdit: false
+                },
+                {
+                    name: "打豆豆",
+                    isTodo: true,
                     isEdit: false
                 }
             ]
@@ -142,14 +151,60 @@
                 //console.log(this.editTodo);
             },
             //保存编辑的带办事
-            addEidtTodo(index){
-               // console.log('kss');
+            addEidtTodo(index) {
+                // console.log('kss');
                 this.list[index].name = this.savetodo;
                 this.list[index].isEdit = !this.list[index].isEdit;
             },
             //退出编辑状态
-            escTodo(index){
-                this.list[index].isEdit = !this.list[index].isEdit;
+            escTodo(index) {
+                this.list[index].isEdit = false;
+            },
+            //清空带办事
+            clearList() {
+                this.list = [];
+            },
+            //改变显示条件
+            changevisibility(data) {
+                this.visibility = data;
+            }
+        },
+        // 计算属性
+        computed: {
+            //剩余带办事的数量
+            remain() {
+                let num = 0;
+                for (let i = 0; i < this.list.length; i++) {
+                    console.log(this.list[i].isTodo);
+
+                    if (this.list[i].isTodo == false) {
+                        num++;
+                    }
+                }
+                return num;
+            },
+            //根据条件得到的list
+            changeList() {
+                //se5的数据遍历的新方法
+                return this.list.filter((v, i) => {
+                    switch (this.visibility) {
+                        case '全部':
+                            return v;
+                            break;
+                        case '未完成':
+                            if (v.isTodo == false) {
+                                return v;
+                            }
+                            break;
+                        case '完成':
+                            if (v.isTodo == true) {
+                                return v;
+                            }
+                            break;
+
+                    }
+                });
+
             }
         }
     });
