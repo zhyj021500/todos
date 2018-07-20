@@ -1,0 +1,153 @@
+<html>
+
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <title></title>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta name="robots" content="noindex, nofollow">
+    <meta name="googlebot" content="noindex, nofollow">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="stylesheet" href="./css/index.css">
+    <script type="text/javascript" src="./lib/vue.js"></script>
+    <style>
+        [v-cloak] { display: none }
+    </style>
+</head>
+
+<body>
+    <section class="todoapp">
+        <header class="header">
+            <h1>任务清单</h1>
+            <input autofocus="autofocus" v-model="valueinfo" autocomplete="off" placeholder="想干啥?" class="new-todo" @keyup.enter="add">
+        </header>
+        <section class="main">
+            <input type="checkbox" class="toggle-all">
+            <ul class="todo-list">
+                <li :class="['todo',{completed:item.isTodo,editing:item.isEdit} ]" v-for="(item, index) in list">
+                    <div class="view">
+                        <input type="checkbox" v-model="item.isTodo" class="toggle">
+                        <label  v-cloak @dblclick="editTodo(index)">{{item.name}}</label>
+                        <button class="destroy" @click="deleteTodo(index)"></button>
+                    </div>
+                    <input type="text" v-model="savetodo" class="edit">
+                </li>
+                <!-- <li class="todo completed">
+                    <div class="view">
+                        <input type="checkbox" class="toggle">
+                        <label>21</label>
+                        <button class="destroy"></button>
+                    </div>
+                    <input type="text" class="edit">
+                </li>
+                <li class="todo editing">
+                    <div class="view">
+                        <input type="checkbox" class="toggle">
+                        <label>21</label>
+                        <button class="destroy"></button>
+                    </div>
+                    <input type="text" class="edit">
+                </li> -->
+            </ul>
+        </section>
+        <footer class="footer">
+            <span class="todo-count">
+                <strong>1</strong> 项 剩余
+            </span>
+            <ul class="filters">
+                <li>
+                    <a href="#/all" class="selected">全部</a>
+                </li>
+                <li>
+                    <a href="#/active" class="selected">未完成</a>
+                </li>
+                <li>
+                    <a href="#/completed" class="selected">完成</a>
+                </li>
+            </ul>
+            <button class="clear-completed">
+                清空列表
+            </button>
+        </footer>
+    </section>
+    <footer class="info">
+        <p>双击进入编辑状态</p>
+        <p>鸣谢:
+            <a href="http://evanyou.me">Evan You</a>
+        </p>
+        <p>参考于
+            <a href="http://todomvc.com">TodoMVC</a>
+        </p>
+    </footer>
+
+    <script>
+        // tell the embed parent frame the height of the content
+        if (window.parent && window.parent.parent) {
+            window.parent.parent.postMessage(["resultsFrame", {
+                height: document.body.getBoundingClientRect().height,
+                slug: "4dr2fLb7"
+            }], "*")
+        }
+    </script>
+
+
+</body>
+
+</html>
+<script src="./lib/vue.js"></script>
+<script>
+    let app = new Vue({
+        el: '.todoapp',
+        data: {
+            // 带办事
+            valueinfo: '',
+            // 零时保存的带办事
+            savetodo:"",
+            list: [{
+                    name: "吃饭",
+                    isTodo: true,
+                    isEdit: false
+                },
+                {
+                    name: "睡觉",
+                    idTodo: false,
+                    isEdit: false
+                }
+            ]
+        },
+        methods: {
+            //添加数据
+            add() {
+                // console.log('dksds');
+                this.valueinfo = this.valueinfo.trim();
+                if (this.valueinfo !== '') {
+                    this.list.push({
+                        name: this.valueinfo,
+                        idTodo: false,
+                        isEdit: false
+                    });
+                    this.valueinfo = '';
+                }
+            },
+            //删除单个带办事
+            deleteTodo(index) {
+                this.list.splice(index, 1);
+            }
+            // 双击进入编辑状态
+            ,
+            editTodo(index) {
+                //排他思想,排除其他的编辑状态,给当前设置编辑状态
+                for (let i = 0; i < this.list.length; i++) {
+                    this.list[i].isEdit = false;
+                }
+                //给当前设置编辑状态
+                this.list[index].isEdit = !this.list[index].isEdit;
+                //把当前的带办事保存到savetodo 在编辑状态显示
+                this.savetodo = this.list[index].name;
+                //console.log(this.editTodo);
+                
+            },
+            //
+        }
+    });
+</script>
